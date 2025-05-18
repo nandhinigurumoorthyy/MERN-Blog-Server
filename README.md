@@ -120,7 +120,7 @@ npm start
 Ensure the frontend is connected and uses matching API endpoints.
 
 * **Frontend Repository**: [MERN Blog UI](https://github.com/nandhinigurumoorthyy/MERN-Blog-UI.git)
-* **Live Site**: [https://mern-blog-ui.vercel.app](https://mern-blog-ui.netlify.app/)
+* **Live Site**: [https://mern-blog-ui.netlify.app](https://mern-blog-ui.netlify.app/)
 
 
 
