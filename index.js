@@ -8,6 +8,7 @@ const { createDbConnection } = require("./db");
 const UserModel = require("./model/user.model");
 const BlogModel = require("./model/blog.model");
 const app = express();
+const bcrypt = require("bcrypt");
 
 // Middleware
 app.use(express.json());
@@ -51,8 +52,18 @@ const verifyJwt = (req, res, next) => {
 app.post("/auth/signup", async (req, res) => {
   console.log(req.body);
   try {
-    const user = new UserModel(req.body);
+    // Extract user data
+    const { username, email, password } = req.body;
+
+    // Hash the password (salt rounds can be 10 or more)
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user with the hashed password
+    const user = new UserModel({ username, email, password: hashedPassword });
+
+    // Save the user to the database
     const result = await user.save();
+
     res.json({ status: "Success", user: result });
   } catch (err) {
     console.error("Error creating user:", err.message);
@@ -71,14 +82,15 @@ app.post("/auth/login", async (req, res) => {
       return res.status(404).json({ status: "ERROR", message: "No record exists" });
     }
 
-    // Compare plain text password ( Not Secure)
-    if (password !== user.password || email!==user.email) {
+    // Compare password with hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
       return res.status(401).json({ status: "ERROR", message: "Incorrect email or password" });
     }
 
     // Generate JWT token
     const token = jwt.sign(
-      { email: user.email, id: user._id, username:user.username }, 
+      { email: user.email, id: user._id, username: user.username },
       process.env.JWT_SECRET_KEY || "default_secret_key",
       { expiresIn: "1d" }
     );
@@ -92,8 +104,8 @@ app.post("/auth/login", async (req, res) => {
     res.json({
       status: "Success",
       message: "Login successful",
-      user: { email: user.email, userid: user._id, username:user.username },
-     });
+      user: { email: user.email, userid: user._id, username: user.username },
+    });
 
   } catch (err) {
     console.error("Error logging in:", err.message);
