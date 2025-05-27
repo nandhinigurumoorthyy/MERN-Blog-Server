@@ -8,9 +8,11 @@ This is the back-end of a full-stack Blog application built with **Node.js**, **
 
 * 🔐 **User Authentication**
 
-  * Signup and login using JWT tokens.
-  * Secure cookies with `cookie-parser`.
-  * Auth middleware for protected routes.
+  * Signup and login using **JWT tokens**.
+  * Passwords are securely **hashed with bcrypt** during signup and verified during login.
+  * Secure cookies handled with `cookie-parser`.
+  * **Auth middleware** for protecting routes and ensuring token validation.
+
 
 * 📰 **Blog Management (CRUD)**
 
